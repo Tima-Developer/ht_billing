@@ -9,6 +9,8 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    public $fillable = ['source_user_id', 'destination_user_id', 'amount', 'description', 'type'];
+
     /**
      * Тип транзакции для снятия денег со счета
      */

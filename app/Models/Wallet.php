@@ -11,4 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 class Wallet extends Model
 {
     use HasFactory;
+
+    public $fillable = ['user_id', 'balance'];
 }
