@@ -28,13 +28,46 @@ class TransactionController extends Controller
 
         $validateData = Validator::make($data, [
             'user_id'             => 'numeric',
-            'type'                => 'required|in:debit,replenishment,transfer',
+            'type'                => 'required|in:debit,replenishment',
             'amount'              => 'required|regex:/^\d+(\.\d{1,2})?$/',
-            'destination_user_id' => 'numeric',
         ], [
             'user_id.numeric'             => 'Id пользователя должен быть числом',
             'type.required'               => 'Тип транзакции обязательный параметр',
             'type.in'                     => 'Не верный тип транзакции',
+            'amount.required'             => 'Сумма обязательный параметр',
+            'amount.numeric'              => 'Сумма должна быть числом с плавающей точкой',
+            'amount.regex'                => 'Сумма должна быть числом с плавающей точкой',
+        ]);
+
+        if ($validateData->fails()) {
+            return response()->json([
+                'message' => $validateData->errors()->first(),
+            ], 422);
+        }
+
+        $service = new CreateTransactionService;
+        $result  = $service->execute($data, $data['type']);
+
+        return response()->json($result->getMessage(), $result->getStatus());
+    }
+
+    /**
+     * Перевод со счета на счет
+     *
+     * @param  \Illuminate\Http\Request      $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function transfer(Request $request): JsonResponse
+    {
+        $data = $request->toArray();
+
+        $validateData = Validator::make($data, [
+            'source_user_id'      => 'required|numeric',
+            'amount'              => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'destination_user_id' => 'required|numeric',
+        ], [
+            'source_user_id.required'     => 'Id отправителя обязательный параметр',
+            'source_user_id.numeric'      => 'Id отправилтеля должен быть числом',
             'amount.required'             => 'Сумма обязательный параметр',
             'amount.numeric'              => 'Сумма должна быть числом с плавающей точкой',
             'amount.regex'                => 'Сумма должна быть числом с плавающей точкой',
@@ -47,14 +80,8 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        if ($data['type'] === Transaction::TYPE_TRANSFER && empty($data['destination_user_id'])) {
-            return response()->json([
-                'message' => 'Id целевого пользователя обязательный параметр',
-            ], 422);
-        }
-
         $service = new CreateTransactionService;
-        $result  = $service->execute($data, $data['type']);
+        $result  = $service->execute($data, Transaction::TYPE_TRANSFER);
 
         return response()->json($result->getMessage(), $result->getStatus());
     }

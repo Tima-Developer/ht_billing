@@ -22,7 +22,7 @@ class Transfer
     {
         try {
             DB::transaction(function () use ($params) {
-                $wallet = Wallet::where('user_id', $params['user_id'])
+                $wallet = Wallet::where('user_id', $params['source_user_id'])
                     ->first();
 
                 if (!$wallet) {
@@ -45,7 +45,7 @@ class Transfer
                 $destinationWallet->save();
 
                 Transaction::create([
-                    'source_user_id'      => $params['user_id'],
+                    'source_user_id'      => $params['source_user_id'],
                     'destination_user_id' => $params['destination_user_id'],
                     'amount'              => $params['amount'],
                     'type'                => Transaction::TYPE_TRANSFER,

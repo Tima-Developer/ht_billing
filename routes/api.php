@@ -15,5 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::namespace('App\Http\Controllers')->group(function () {
+    Route::post('transaction/transfer',  'TransactionController@transfer');
     Route::post('transaction/{user_id}', 'TransactionController@createTransaction');
 });
