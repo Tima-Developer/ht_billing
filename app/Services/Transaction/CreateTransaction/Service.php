@@ -10,7 +10,8 @@ use App\Models\Transaction;
 class Service
 {
     private const TYPE_MAPPER = [
-        Transaction::TYPE_DEBIT => Processors\Debit::class,
+        Transaction::TYPE_DEBIT         => Processors\Debit::class,
+        Transaction::TYPE_REPLENISHMENT => Processors\Replenishment::class,
     ];
 
     /**
