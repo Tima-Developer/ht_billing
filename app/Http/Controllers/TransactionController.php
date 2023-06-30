@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use App\Services\Transaction\CreateTransaction\Service as CreateTransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,7 +47,15 @@ class TransactionController extends Controller
             ], 422);
         }
 
+        if ($data['type'] === Transaction::TYPE_TRANSFER && empty($data['destination_user_id'])) {
+            return response()->json([
+                'message' => 'Id целевого пользователя обязательный параметр',
+            ], 422);
+        }
+
         $service = new CreateTransactionService;
         $result  = $service->execute($data, $data['type']);
+
+        return response()->json($result->getMessage(), $result->getStatus());
     }
 }
