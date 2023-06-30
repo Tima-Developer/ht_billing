@@ -7,9 +7,18 @@ use App\Services\Transaction\CreateTransaction\Result;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Процессор для списания денег со счета
+ */
 class Debit
 {
-    public function execute($params): Result
+    /**
+     * Выполняет списание со счета
+     *
+     * @param  array                                               $params
+     * @return \App\Services\Transaction\CreateTransaction\Result
+     */
+    public function execute(array $params): Result
     {
         try {
             DB::transaction(function () use ($params) {
